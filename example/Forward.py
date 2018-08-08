@@ -4,20 +4,6 @@ import itchat
 from itchat.content import *
 
 
-# # 自动回复文本等类别消息
-# # isGroupChat=False表示非群聊消息
-# @itchat.msg_register([TEXT, MAP, CARD, NOTE, SHARING], isGroupChat=False)
-# def text_reply(msg):
-#     itchat.send('这是我的小号，暂无调戏功能，有事请加我大号：westman', msg['FromUserName'])
-#
-#
-# # 自动回复图片等类别消息
-# # isGroupChat=False表示非群聊消息
-# @itchat.msg_register([PICTURE, RECORDING, ATTACHMENT, VIDEO], isGroupChat=False)
-# def download_files(msg):
-#     itchat.send('这是我的小号，暂无调戏功能，有事请加我大号：westman', msg['FromUserName'])
-
-
 # 自动处理添加好友申请
 @itchat.msg_register(FRIENDS)
 def add_friend(msg):
@@ -80,25 +66,12 @@ def group_reply_media(msg):
 
     #设置群聊名称
 def setup_groupname(group_name):
-
     chatrooms = ichatrooms = itchat.search_chatrooms(name=group_name)
-
-
     return chatrooms
+
 # 扫二维码登录
 itchat.auto_login(hotReload=True)
-# 获取所有通讯录中的群聊
-# 需要在微信中将需要同步的群聊都保存至通讯录
-# chatrooms = itchat.get_chatrooms(update=True, contactOnly=True)
-# print(itchat.search_friends(name='晔枫')[0])
 
-#发送消息给指定人
-# itchat.send_msg(msg='Text Message', toUserName=itchat.search_friends(name='晔枫')[0]['UserName'])
-
-
-# chatrooms = ichatrooms = itchat.search_chatrooms(name='微博股市预测')
-# chatrooms = ichatrooms = itchat.search_chatrooms(name='unis')
-# chatroom_ids = [c['UserName'] for c in chatrooms]
 
 #设置群聊名称
 chatrooms = setup_groupname('unis')
