@@ -43,14 +43,14 @@ def group_reply_text(msg):
     elif msg['Type'] == SHARING:
         content = msg['Text']
 
-    # 根据消息类型转发至其他需要同步消息的群聊
+    # 根据消息类型转发至其他需要同步消息的群聊或个人
     if msg['Type'] == TEXT:
-        # itchat.send_msg('%s said: \n%s' % (username, msg['Content']), toUserName=itchat.search_friends(name='晔枫')[0]['UserName'])
-        itchat.send_msg('%s said: \n%s' % (username, msg['Content']),
-                        toUserName=itchat.search_friends(name='庹阳平TUO')[0]['UserName'])
+        itchat.send_msg('[%s] 在群聊 [%s]中说: \n%s' % (username, ' '.join([item['NickName'] for item in chatrooms]),msg['Content']), toUserName=itchat.search_friends(name=NickName_for_single_people)[0]['UserName'])
+        # itchat.send_msg('%s said: \n%s' % (username, msg['Content']),
+        #                 toUserName=itchat.search_friends(name='westman')[0]['UserName'])
     elif msg['Type'] == SHARING:
-        # itchat.send_msg('%s\n%s' % (username, msg['Content']), toUserName=itchat.search_friends(name='晔枫')[0]['UserName'])
-        itchat.send_msg('%s\n%s' % (username, msg['Content']), toUserName=itchat.search_friends(name='庹阳平TUO')[0]['UserName'])
+        itchat.send_msg('%s\n%s' % (username, msg['Content']), toUserName=itchat.search_friends(name='晔枫')[0]['UserName'])
+        # itchat.send_msg('%s\n%s' % (username, msg['Content']), toUserName=itchat.search_friends(name='westman')[0]['UserName'])
 
 
 # 自动回复图片等类别的群聊消息
@@ -72,22 +72,42 @@ def group_reply_media(msg):
 
     # 下载图片等文件
     msg['Text'](msg['FileName'])
-    # 转发至其他需要同步消息的群聊
-    # itchat.send('@%s@%s' % ({'Picture': 'img', 'Video': 'vid'}.get(msg['Type'], 'fil'), msg['FileName']),
-    #     toUserName=itchat.search_friends(name='晔枫')[0]['UserName'])
+    # 转发至其他需要同步消息的个人或者群聊
     itchat.send('@%s@%s' % ({'Picture': 'img', 'Video': 'vid'}.get(msg['Type'], 'fil'), msg['FileName']),
-        toUserName=itchat.search_friends(name='庹阳平TUO')[0]['UserName'])
+        toUserName=itchat.search_friends(name='晔枫')[0]['UserName'])
+    # itchat.send('@%s@%s' % ({'Picture': 'img', 'Video': 'vid'}.get(msg['Type'], 'fil'), msg['FileName']),
+    #     toUserName=itchat.search_friends(name='westman')[0]['UserName'])
 
+    #设置群聊名称
+def setup_groupname(group_name):
+
+    chatrooms = ichatrooms = itchat.search_chatrooms(name=group_name)
+
+
+    return chatrooms
 # 扫二维码登录
 itchat.auto_login(hotReload=True)
 # 获取所有通讯录中的群聊
 # 需要在微信中将需要同步的群聊都保存至通讯录
 # chatrooms = itchat.get_chatrooms(update=True, contactOnly=True)
 # print(itchat.search_friends(name='晔枫')[0])
+
+#发送消息给指定人
 # itchat.send_msg(msg='Text Message', toUserName=itchat.search_friends(name='晔枫')[0]['UserName'])
-chatrooms = ichatrooms = itchat.search_chatrooms(name='微博股市预测')
+
+
+# chatrooms = ichatrooms = itchat.search_chatrooms(name='微博股市预测')
 # chatrooms = ichatrooms = itchat.search_chatrooms(name='unis')
+# chatroom_ids = [c['UserName'] for c in chatrooms]
+
+#设置群聊名称
+chatrooms = setup_groupname('unis')
 chatroom_ids = [c['UserName'] for c in chatrooms]
+
+#设置转发个人微信号
+NickName_for_single_people = '宗鹏'
+
+
 print(
 '正在监测的群聊：', len(chatrooms), '个')
 print(
