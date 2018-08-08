@@ -3,7 +3,6 @@
 import itchat
 from itchat.content import *
 
-
 # 自动处理添加好友申请
 @itchat.msg_register(FRIENDS)
 def add_friend(msg):
@@ -31,9 +30,23 @@ def group_reply_text(msg):
 
     # 根据消息类型转发至其他需要同步消息的群聊或个人
     if msg['Type'] == TEXT:
-        itchat.send_msg('[%s] 在群聊 [%s]中说: \n%s' % (username, ' '.join([item['NickName'] for item in chatrooms]),msg['Content']), toUserName=itchat.search_friends(name=NickName_for_single_people)[0]['UserName'])
-        # itchat.send_msg('%s said: \n%s' % (username, msg['Content']),
-        #                 toUserName=itchat.search_friends(name='westman')[0]['UserName'])
+
+        # 转个人
+        if Flag_for_single_people:
+            itchat.send_msg('[%s] [%s]中说: \n%s' % (
+                username, chatroom_id,msg['Content']),
+                            toUserName=itchat.search_friends(name=NickName_for_single_people)[0]['UserName'])
+
+        #转发
+        if single_chatrooms_flag:
+            # 转指定群聊
+                itchat.send('[%s]说: %s' % (username, msg['Content']), chatrooms['UserName'])
+        else:
+            # 转所有群聊
+            for item in chatrooms:
+                if not item['UserName'] == chatroom_id:
+                    itchat.send('[%s]说: %s' % (username, msg['Content']), item['UserName'])
+
     elif msg['Type'] == SHARING:
         itchat.send_msg('%s\n%s' % (username, msg['Content']), toUserName=itchat.search_friends(name='晔枫')[0]['UserName'])
         # itchat.send_msg('%s\n%s' % (username, msg['Content']), toUserName=itchat.search_friends(name='westman')[0]['UserName'])
@@ -65,21 +78,25 @@ def group_reply_media(msg):
     #     toUserName=itchat.search_friends(name='westman')[0]['UserName'])
 
     #设置群聊名称
-def setup_groupname(group_name):
-    chatrooms = ichatrooms = itchat.search_chatrooms(name=group_name)
+def set_single_groupname(group_name):
+    chatroom = ichatroom = itchat.search_chatrooms(name=group_name)
     return chatrooms
 
 # 扫二维码登录
 itchat.auto_login(hotReload=True)
 
-
-#设置群聊名称
-chatrooms = setup_groupname('unis')
+# 获取所有通讯录中的群聊
+# 需要在微信中将需要同步的群聊都保存至通讯录
+chatrooms = itchat.get_chatrooms(update=True, contactOnly=True)
 chatroom_ids = [c['UserName'] for c in chatrooms]
+
+#单独设置监听群聊名称
+single_chatroom = set_single_groupname('老王家')
+single_chatrooms_flag = False
 
 #设置转发个人微信号
 NickName_for_single_people = '宗鹏'
-
+Flag_for_single_people = True
 
 print(
 '正在监测的群聊：', len(chatrooms), '个')
